@@ -45,6 +45,7 @@ class Player {
         player.setAttribute('data-id', this.id);
         if (this.selected == true)
             player.classList.add('selected');
+
         let image = document.createElement('img');
         image.setAttribute('src', this.image);
         let name = document.createElement('div');
@@ -122,8 +123,10 @@ class Superwar {
     // Check for fight
     isFight = () => {
         // Type your code here
-
         // return  'clash' or 'peace';
+        return (this.players.filter(player => player.selected &&
+            player.strength > 0).length == 2) ? 'clash' : 'peace';
+
     }
 
     // Fight
@@ -140,7 +143,14 @@ class Superwar {
     calculateScore = () => {
         // Calculate and return the total score of teams
         // Type your code here
-
+        let score = this.players
+            .reduce((score, player) => {
+                score[player.type] += player.wins;
+                return score;
+            }, {
+                'hero': 0,
+                'villain': 0
+            });
         return score;
     }
 
@@ -149,8 +159,17 @@ class Superwar {
         // Find the winner if exists return type hero or villain
         // If winner dosen't exists then return endure
         // Type your code here
-
-      return result;
+        let heroStrength = this.totalStrength('hero');
+        let villainStrength = this.totalStrength('villain')
+        var result = "";
+        if (heroStrength == 0) {
+            result = 'villain';
+        } else if (villainStrength == 0) {
+            result = 'hero';
+        } else {
+            result = 'endure';
+        }
+        return result;
     }
 
     // Find total strength of a team
@@ -158,7 +177,10 @@ class Superwar {
         // Calculate and return the total strength of the team
         // Type your code here
 
-        return strength;
+        return this.players
+            .filter(player => player.type == type)
+            .reduce((totalStrength, player) =>
+                totalStrength + player.strength, 0);
     }
 
     // Announce the winner
